@@ -1,2 +1,2 @@
 # Nwitter
-Replica of a social media platform
+A replica of a social media platform
