@@ -3,13 +3,11 @@ import mysql.connector
 from mysql.connector import Error
 from configparser import ConfigParser
 from datetime import datetime
+import ConfigReader
 #from flask_jsonpify import jsonify
 
 
 class WriteAPI():
-
-    def __init__(self) -> None:
-        pass
     
     def read_db_config(filename='nwitter/services/config/config.ini', section='mysql'):
         """ Read database configuration file and return a dictionary object
@@ -54,17 +52,29 @@ class WriteAPI():
 
     def writeDataAPI(self, params):
         try:
-            self.connect()
+            #self.connect()
+            # """ Connect to MySQL database """
+            db = ConfigReader.configReader()
+            db_config = db.read_db_config()
+            conn = mysql.connector.MySQLConnection(**db_config)
+            # if conn.is_connected():
+            #     print('Connected to MySQL database')
             # Getting the current time
+            # conn = mysql.connector.connect(
+            #     host="remotemysql.com",
+            #     database = "wlBldi1Uvr",
+            #     user = "wlBldi1Uvr",
+            #     password = "zfeuH21fb8"
+            # )
             timeNow = str(datetime.now())
-
+            with conn.cursor() as cus:
             # Insert a row of data
-            self.conn.execute(
-                "INSERT INTO Nweet_data ('UserID', 'Status', 'MediaID', 'NweetID', 'CreatedAT')VALUES ( ?, ?, ?, ?, ?)", (params['user_id'], params['message'], params['media_ids'], 1001, timeNow))
-
+                cus.execute("INSERT INTO Nweet_data (UserID, Status, MediaID, NweetID, CreatedAT)VALUES ( %s, %s, %s, %s, %s)", (params["user_id"], params["message"], params["media_ids"], 1001, timeNow))
+                #cus.execute("INSERT INTO Nweet_data ('UserID', 'Status', 'MediaID', 'NweetID', 'CreatedAT') VALUES ( 221, 'Hello there', 223, 1001, '2021-04-22')")
+                conn.commit()
             # Save (commit) the changes
-            self.conn.commit()
-            self.conn.close()
+            #self.conn.commit()
+            conn.close()
             return "Success"
             #return jsonify({'status' : '1'})
         except Exception as e:
