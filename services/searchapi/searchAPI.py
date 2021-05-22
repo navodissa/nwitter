@@ -7,7 +7,7 @@ import ConfigReader
 from flask_jsonpify import jsonify
 
 
-class WriteAPI():
+class ReadAPI():
     
     def connect(self):
         """ Connect to MySQL database """
@@ -28,18 +28,27 @@ class WriteAPI():
                     ('shortlink', 'expiration_length_in_minutes', 'created_at', 'paste_path')''')
 
 
-    def writeDataAPI(self, params):
+    def readDataAPI(self, user):
         try:
             self.connect()
             timeNow = str(datetime.now())
-            with self.conn.cursor() as cus:
+            cus = self.conn.cursor()
             # Insert a row of data
-                cus.execute("INSERT INTO Nweet_data (UserID, Status, MediaID, NweetID, CreatedAT)VALUES ( %s, %s, %s, %s, %s)", (params["user_id"], params["message"], params["media_ids"], 1002, timeNow))
-                self.conn.commit()
+            cus.execute("SELECT * FROM Nweet_data WHERE UserID = (%s)" % user)
+                #self.conn.commit()
             # Save (commit) the changes
+            results = cus.fetchall()
+            param = ['UserID', 'Status', 'MediaID', 'NweetID', 'CreatedAT']
+            returnJson = {}
+            fullJson = []
+            for row in results:
+                for col in range(0,len(row)):
+                    returnJson[param[col]] = row[col]
+                fullJson.append(returnJson)
+                returnJson = {}
             self.conn.close()
-            #return "Success"
-            return jsonify({'status' : '1'})
+            return jsonify(fullJson)
+            #return jsonify({'status' : '1'})
         except Exception as e:
             print (e)
             #return "Failed"
