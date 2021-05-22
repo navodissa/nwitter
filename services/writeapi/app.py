@@ -23,15 +23,21 @@ def write():
 @app.route('/api/v1/tweet', methods=['POST'])
 def writeAPI():
     if request.method == "POST":
+        request_data = request.get_json()
+        # Extracting the data received as json and added them to a dictionary to be passed to WriteAPI object
         params = {}
-        params['user_id'] = request.form['user_id']
-        params['auth_token'] = request.form['auth_token']
-        params['message'] = request.form['message']
-        params['media_ids'] = request.form['media_ids']
+        params['user_id'] = request_data['user_id']
+        params['auth_token'] = request_data['auth_token']
+        params['message'] = request_data['status']
+        params['media_ids'] = request_data['media_ids']
+
+        # Creating a WriteAPI object
         write = wp.WriteAPI()
+
+        # Calling the writeDataAPI function of created object and assigned the return value
         result = write.writeDataAPI(params)
-        return render_template('write_output.html', result=result)
-        #return result
+        #return render_template('write_output.html', result=result)
+        return result
         
 
 if __name__ == '__main__':
