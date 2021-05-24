@@ -1,9 +1,17 @@
+import os
+import sys
+
+script_dir = os.path.dirname( __file__ )
+mymodule_dir = os.path.join( script_dir, '..', 'notification' )
+sys.path.append( mymodule_dir )
+
 # sqlite3, haslib modules are already ported with Python3
 import mysql.connector
 from mysql.connector import Error
 from configparser import ConfigParser
 from datetime import datetime
 import ConfigReader
+import sendEmail as email
 from flask_jsonpify import jsonify
 
 
@@ -37,6 +45,7 @@ class WriteAPI():
                 cus.execute("INSERT INTO Nweet_data (UserID, Status, MediaID, NweetID, CreatedAT)VALUES ( %s, %s, %s, %s, %s)", (params["user_id"], params["message"], params["media_ids"], 1002, timeNow))
                 self.conn.commit()
             # Save (commit) the changes
+            email.SendEmail().sendMail(params["user_id"])
             self.conn.close()
             #return "Success"
             return jsonify({'status' : '1'})
