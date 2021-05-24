@@ -31,6 +31,7 @@ class SendEmail():
             Subject: Hi there
 
             This message is sent from Python.
+            
             """
 
             # Create a secure SSL context
