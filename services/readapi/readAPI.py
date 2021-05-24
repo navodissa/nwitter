@@ -31,7 +31,6 @@ class ReadAPI():
     def readDataAPI(self, user):
         try:
             self.connect()
-            timeNow = str(datetime.now())
             cus = self.conn.cursor()
             # Insert a row of data
             cus.execute("SELECT * FROM Nweet_data WHERE UserID = (%s)" % user)
